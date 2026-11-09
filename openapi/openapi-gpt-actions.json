@@ -1,0 +1,407 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "XPayr Crypto Gateway — OpenAI Custom GPT Actions API",
+    "version": "1.0.0",
+    "description": "Official OpenAPI 3.1.0 specification for XPayr (https://xpayr.com). Supports Dual Checkout (Web3 1-Click Pay & Direct Exchange QR Transfer with On-Chain Explorer Verification), Multi-Chain Payment Links, 1-Year Reusable Links, Automated HTML Invoice Push, Signed HMAC Webhooks, and Policy-Controlled AI Agent Commerce across EVM, TRON, Solana, and Arc Mainnet/Testnet.",
+    "contact": {
+      "name": "XPayr Developer Engineering",
+      "url": "https://xpayr.com/developers",
+      "email": "legal@xpayr.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://xpayr.com/api/v1",
+      "description": "XPayr Production Mainnet & Free Testnet Gateway API v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key (sk_test_... or sk_live_... or agk_...)",
+        "description": "Provide your XPayr Merchant Secret Key (sk_test_... / sk_live_...) or AI Agent Key (agk_test_... / agk_live_...) from https://xpayr.com/merchant/register"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "xpayr_health_check",
+        "summary": "API Gateway Health Check",
+        "description": "Check XPayr Gateway API v1 operational health, version, and server timestamp.",
+        "responses": {
+          "200": {
+            "description": "Successful API Gateway Health Check response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments": {
+      "post": {
+        "operationId": "xpayr_create_payment_session",
+        "summary": "Create Crypto Payment Session (Dual Checkout)",
+        "description": "Create a non-custodial crypto payment session supporting Web3 1-Click Pay, Direct Exchange QR Transfer, Multi-Chain Links, 1-Year Reusable Links, and Automated HTML Invoice Email Delivery.",
+        "responses": {
+          "200": {
+            "description": "Successful Create Crypto Payment Session (Dual Checkout) response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "description": "Invoice amount in USD/token units.",
+                    "example": 49.9
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Token symbol (USDT, USDC, SOL, TRX, BNB, ETH, MATIC).",
+                    "example": "USDT"
+                  },
+                  "network": {
+                    "type": "string",
+                    "description": "Network key (tron-mainnet, solana-mainnet, bsc-mainnet, base-mainnet, arc-mainnet).",
+                    "example": "tron-mainnet"
+                  },
+                  "order_id": {
+                    "type": "string",
+                    "description": "Merchant order reference ID.",
+                    "example": "ORD-1001"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Order description shown at checkout.",
+                    "example": "Pro SaaS Annual Plan"
+                  },
+                  "is_multi_chain": {
+                    "type": "boolean",
+                    "description": "Allow buyer to dynamically select any active network and token at checkout.",
+                    "example": true
+                  },
+                  "is_reusable": {
+                    "type": "boolean",
+                    "description": "Keep link active for 1 year for repeat payments.",
+                    "example": false
+                  },
+                  "send_invoice_email": {
+                    "type": "boolean",
+                    "description": "Dispatch branded HTML invoice email to customer_email.",
+                    "example": true
+                  },
+                  "customer_email": {
+                    "type": "string",
+                    "description": "Customer email for invoice delivery.",
+                    "example": "buyer@example.com"
+                  },
+                  "ipn_callback_url": {
+                    "type": "string",
+                    "description": "HTTPS webhook endpoint URL.",
+                    "example": "https://example.com/webhooks/xpayr"
+                  }
+                },
+                "required": [
+                  "amount",
+                  "currency"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{session_id}/status": {
+      "get": {
+        "operationId": "xpayr_get_public_payment_status",
+        "summary": "Poll Public On-Chain Payment Status",
+        "description": "Poll real-time public checkout status, on-chain tx_hash, sender wallet address, block confirmations, and paid_at timestamp without an API key.",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "description": "Payment session ID.",
+            "schema": {
+              "type": "string",
+              "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Poll Public On-Chain Payment Status response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/balance": {
+      "get": {
+        "operationId": "xpayr_get_merchant_balance",
+        "summary": "Get Multi-Chain Settlement Volume & Balance",
+        "description": "Query confirmed non-custodial settlement volume, transaction counts, and platform fees grouped by currency and blockchain network.",
+        "responses": {
+          "200": {
+            "description": "Successful Get Multi-Chain Settlement Volume & Balance response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/networks": {
+      "get": {
+        "operationId": "xpayr_get_supported_networks",
+        "summary": "List Supported Networks, Chains & Tokens",
+        "description": "List all active EVM, TRON, Solana, and Arc Mainnet/Testnet blockchain networks, chain IDs, RPC endpoints, splitter contracts, and supported tokens.",
+        "responses": {
+          "200": {
+            "description": "Successful List Supported Networks, Chains & Tokens response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/test": {
+      "post": {
+        "operationId": "xpayr_send_test_webhook",
+        "summary": "Dispatch Signed Test Webhook Event",
+        "description": "Send a signed test.webhook payload with HMAC-SHA256 headers to verify merchant webhook signature verification.",
+        "responses": {
+          "200": {
+            "description": "Successful Dispatch Signed Test Webhook Event response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-intents": {
+      "post": {
+        "operationId": "xpayr_submit_agent_payment_intent",
+        "summary": "Submit Autonomous AI Agent Payment Intent",
+        "description": "Submit an autonomous AI agent payment intent evaluated in real time against merchant policy rules (approved, pending_approval, rejected).",
+        "responses": {
+          "200": {
+            "description": "Successful Submit Autonomous AI Agent Payment Intent response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "description": "Requested payment amount.",
+                    "example": 19.99
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Token symbol (USDC, USDT).",
+                    "example": "USDC"
+                  },
+                  "network": {
+                    "type": "string",
+                    "description": "Target blockchain network.",
+                    "example": "arc-testnet"
+                  },
+                  "recipient_address": {
+                    "type": "string",
+                    "description": "Destination wallet address.",
+                    "example": "0xb0bD2f3A86db752dA693D8a686C406E269E57c99"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Payment justification memo.",
+                    "example": "Monthly GPU cluster invoice #402"
+                  }
+                },
+                "required": [
+                  "amount",
+                  "currency"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-intents/{intent_id}/bridge": {
+      "post": {
+        "operationId": "xpayr_bridge_agent_intent_to_checkout",
+        "summary": "Bridge Approved Agent Intent to Checkout Session",
+        "description": "Bridge an approved AI agent payment intent into a live executable XPayr payment session with hosted checkout URL and on-chain verification.",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "description": "Approved agent payment intent ID.",
+            "schema": {
+              "type": "string",
+              "example": "agi_01HXYZ"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Bridge Approved Agent Intent to Checkout Session response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

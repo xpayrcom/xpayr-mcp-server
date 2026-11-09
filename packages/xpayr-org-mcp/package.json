@@ -1,0 +1,53 @@
+{
+    "name": "@xpayr/mcp-server",
+    "version": "1.0.0",
+    "mcpName": "io.github.xpayrcom/xpayr-mcp-server",
+    "description": "Official @xpayr Model Context Protocol (MCP) Server & CLI Launcher exposing 21 Non-Custodial Crypto Checkout, Multi-Chain Payment Link, Signed Webhook, and AI Agent Commerce tools for Claude Desktop, Cursor, and VS Code.",
+    "type": "module",
+    "main": "./index.mjs",
+    "bin": {
+        "xpayr-mcp-server": "./bin/cli.mjs",
+        "xpayr-mcp": "./bin/cli.mjs"
+    },
+    "files": [
+        "bin/",
+        "index.mjs",
+        "server.json",
+        "README.md"
+    ],
+    "scripts": {
+        "start": "node ./bin/cli.mjs",
+        "list": "node ./bin/cli.mjs --list",
+        "print-config": "node ./bin/cli.mjs --print-config"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/xpayrcom/xpayr-mcp-server.git"
+    },
+    "keywords": [
+        "xpayr",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "crypto-payment-gateway",
+        "non-custodial",
+        "usdt",
+        "usdc",
+        "tron",
+        "solana",
+        "arc-network",
+        "ai-agent-payments",
+        "claude-desktop",
+        "cursor",
+        "vscode-mcp"
+    ],
+    "author": "XPayr <https://xpayr.com>",
+    "license": "MIT",
+    "homepage": "https://github.com/xpayrcom/xpayr-mcp-server",
+    "publishConfig": {
+        "access": "public"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

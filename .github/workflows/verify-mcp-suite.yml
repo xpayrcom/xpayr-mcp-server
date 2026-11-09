@@ -1,0 +1,36 @@
+name: Verify XPayr MCP Suite, Schemas & SDKs
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify MCP CLI syntax and tool listing
+        run: |
+          node --check packages/xpayr-mcp/index.mjs
+          node --check packages/xpayr-mcp/bin/cli.mjs
+          node packages/xpayr-mcp/bin/cli.mjs --list
+          node packages/xpayr-mcp/bin/cli.mjs --print-config
+
+      - name: Verify JSON-RPC 2.0 stdio introspection (21 Tools, Resources, Prompts)
+        run: |
+          printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"ci-validator","version":"1.0.0"}}}\n{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}\n{"jsonrpc":"2.0","id":3,"method":"resources/list","params":{}}\n{"jsonrpc":"2.0","id":4,"method":"prompts/list","params":{}}\n{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"xpayr_calculate_gateway_fee_and_split","arguments":{"amount":1000,"currency":"USDT"}}}\n' | node packages/xpayr-mcp/bin/cli.mjs | tee /tmp/mcp_out.jsonl
+          grep -q '"@xpayr/mcp-server"' /tmp/mcp_out.jsonl
+          grep -q '"xpayr_create_payment_session"' /tmp/mcp_out.jsonl
+          grep -q '"xpayr_fee_calculation"' /tmp/mcp_out.jsonl

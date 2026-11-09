@@ -1,0 +1,46 @@
+{
+    "name": "xpayr-mcp-server-suite",
+    "version": "1.0.0",
+    "mcpName": "io.github.xpayrcom/xpayr-mcp-server",
+    "description": "Official XPayr Model Context Protocol (MCP) Server (@xpayr/mcp-server & xpayr-mcp), OpenAPI 3.1.0 Actions, n8n Workflows, and Multi-Language SDK Starter Kit for Non-Custodial Crypto Payments & AI Agent Commerce.",
+    "type": "module",
+    "main": "./packages/xpayr-mcp/index.mjs",
+    "bin": {
+        "xpayr-mcp-server": "./packages/xpayr-mcp/bin/cli.mjs",
+        "xpayr-mcp": "./packages/xpayr-mcp/bin/cli.mjs"
+    },
+    "scripts": {
+        "start": "node ./packages/xpayr-mcp/bin/cli.mjs",
+        "list": "node ./packages/xpayr-mcp/bin/cli.mjs --list",
+        "print-config": "node ./packages/xpayr-mcp/bin/cli.mjs --print-config",
+        "test": "node ./packages/xpayr-mcp/bin/cli.mjs --list"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/xpayrcom/xpayr-mcp-server.git"
+    },
+    "keywords": [
+        "xpayr",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "crypto-payments",
+        "non-custodial",
+        "usdt",
+        "usdc",
+        "solana",
+        "tron",
+        "arc-network",
+        "ai-agents",
+        "agent-commerce",
+        "claude-desktop",
+        "cursor",
+        "n8n"
+    ],
+    "author": "XPayr <https://xpayr.com>",
+    "license": "MIT",
+    "homepage": "https://xpayr.com/developers",
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

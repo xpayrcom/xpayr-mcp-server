@@ -1,0 +1,1014 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "XPayr Non-Custodial Crypto Payment Gateway & AI Agent Commerce API (Full Suite)",
+    "version": "1.0.0",
+    "description": "Official OpenAPI 3.1.0 specification for XPayr (https://xpayr.com). Supports Dual Checkout (Web3 1-Click Pay & Direct Exchange QR Transfer with On-Chain Explorer Verification), Multi-Chain Payment Links, 1-Year Reusable Links, Automated HTML Invoice Push, Signed HMAC Webhooks, and Policy-Controlled AI Agent Commerce across EVM, TRON, Solana, and Arc Mainnet/Testnet.",
+    "contact": {
+      "name": "XPayr Developer Engineering",
+      "url": "https://xpayr.com/developers",
+      "email": "legal@xpayr.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://xpayr.com/api/v1",
+      "description": "XPayr Production Mainnet & Free Testnet Gateway API v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key (sk_test_... or sk_live_... or agk_...)",
+        "description": "Provide your XPayr Merchant Secret Key (sk_test_... / sk_live_...) or AI Agent Key (agk_test_... / agk_live_...) from https://xpayr.com/merchant/register"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "xpayr_health_check",
+        "summary": "API Gateway Health Check",
+        "description": "Check XPayr Gateway API v1 operational health, version, and server timestamp.",
+        "responses": {
+          "200": {
+            "description": "Successful API Gateway Health Check response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments": {
+      "post": {
+        "operationId": "xpayr_create_payment_session",
+        "summary": "Create Crypto Payment Session (Dual Checkout)",
+        "description": "Create a non-custodial crypto payment session supporting Web3 1-Click Pay, Direct Exchange QR Transfer, Multi-Chain Links, 1-Year Reusable Links, and Automated HTML Invoice Email Delivery.",
+        "responses": {
+          "200": {
+            "description": "Successful Create Crypto Payment Session (Dual Checkout) response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "description": "Invoice amount in USD/token units.",
+                    "example": 49.9
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Token symbol (USDT, USDC, SOL, TRX, BNB, ETH, MATIC).",
+                    "example": "USDT"
+                  },
+                  "network": {
+                    "type": "string",
+                    "description": "Network key (tron-mainnet, solana-mainnet, bsc-mainnet, base-mainnet, arc-mainnet).",
+                    "example": "tron-mainnet"
+                  },
+                  "order_id": {
+                    "type": "string",
+                    "description": "Merchant order reference ID.",
+                    "example": "ORD-1001"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Order description shown at checkout.",
+                    "example": "Pro SaaS Annual Plan"
+                  },
+                  "is_multi_chain": {
+                    "type": "boolean",
+                    "description": "Allow buyer to dynamically select any active network and token at checkout.",
+                    "example": true
+                  },
+                  "is_reusable": {
+                    "type": "boolean",
+                    "description": "Keep link active for 1 year for repeat payments.",
+                    "example": false
+                  },
+                  "send_invoice_email": {
+                    "type": "boolean",
+                    "description": "Dispatch branded HTML invoice email to customer_email.",
+                    "example": true
+                  },
+                  "customer_email": {
+                    "type": "string",
+                    "description": "Customer email for invoice delivery.",
+                    "example": "buyer@example.com"
+                  },
+                  "ipn_callback_url": {
+                    "type": "string",
+                    "description": "HTTPS webhook endpoint URL.",
+                    "example": "https://example.com/webhooks/xpayr"
+                  }
+                },
+                "required": [
+                  "amount",
+                  "currency"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "xpayr_list_payment_sessions",
+        "summary": "List Merchant Payment Sessions",
+        "description": "List merchant crypto payment sessions with filtering by status, currency, network, and pagination.",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by status (pending, completed, expired, failed).",
+            "schema": {
+              "type": "string",
+              "example": "completed"
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "description": "Filter by token symbol.",
+            "schema": {
+              "type": "string",
+              "example": "USDT"
+            }
+          },
+          {
+            "name": "network",
+            "in": "query",
+            "required": false,
+            "description": "Filter by blockchain network key.",
+            "schema": {
+              "type": "string",
+              "example": "tron-mainnet"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Records per page (1-100).",
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful List Merchant Payment Sessions response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{session_id}": {
+      "get": {
+        "operationId": "xpayr_get_payment_session",
+        "summary": "Get Payment Session Details",
+        "description": "Retrieve full details, metadata, settlement split amounts, checkout mode, and on-chain transaction hash for a payment session.",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "description": "Payment session ID.",
+            "schema": {
+              "type": "string",
+              "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Get Payment Session Details response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{session_id}/status": {
+      "get": {
+        "operationId": "xpayr_get_public_payment_status",
+        "summary": "Poll Public On-Chain Payment Status",
+        "description": "Poll real-time public checkout status, on-chain tx_hash, sender wallet address, block confirmations, and paid_at timestamp without an API key.",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "description": "Payment session ID.",
+            "schema": {
+              "type": "string",
+              "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Poll Public On-Chain Payment Status response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{session_id}/coupon": {
+      "post": {
+        "operationId": "xpayr_apply_payment_coupon",
+        "summary": "Apply Checkout Discount Coupon",
+        "description": "Validate and apply a merchant promotional discount coupon code to an active pending payment session.",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "description": "Target payment session ID.",
+            "schema": {
+              "type": "string",
+              "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Apply Checkout Discount Coupon response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "coupon_code": {
+                    "type": "string",
+                    "description": "Discount coupon code.",
+                    "example": "XPAYR-DEMO"
+                  }
+                },
+                "required": [
+                  "coupon_code"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "xpayr_get_merchant_profile",
+        "summary": "Get Merchant Profile & Settlement Wallet",
+        "description": "Retrieve authenticated merchant profile, settlement wallet address, commission rate in basis points (50 bps = 0.5%), and active API keys.",
+        "responses": {
+          "200": {
+            "description": "Successful Get Merchant Profile & Settlement Wallet response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/balance": {
+      "get": {
+        "operationId": "xpayr_get_merchant_balance",
+        "summary": "Get Multi-Chain Settlement Volume & Balance",
+        "description": "Query confirmed non-custodial settlement volume, transaction counts, and platform fees grouped by currency and blockchain network.",
+        "responses": {
+          "200": {
+            "description": "Successful Get Multi-Chain Settlement Volume & Balance response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/networks": {
+      "get": {
+        "operationId": "xpayr_get_supported_networks",
+        "summary": "List Supported Networks, Chains & Tokens",
+        "description": "List all active EVM, TRON, Solana, and Arc Mainnet/Testnet blockchain networks, chain IDs, RPC endpoints, splitter contracts, and supported tokens.",
+        "responses": {
+          "200": {
+            "description": "Successful List Supported Networks, Chains & Tokens response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "operationId": "xpayr_get_webhook_config",
+        "summary": "Get Webhook Configuration & Events",
+        "description": "Inspect the merchant webhook callback URL, masked HMAC-SHA256 signing secret, and subscribed payment lifecycle events.",
+        "responses": {
+          "200": {
+            "description": "Successful Get Webhook Configuration & Events response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "xpayr_set_webhook_endpoint",
+        "summary": "Configure HTTPS Webhook Endpoint",
+        "description": "Configure or update the merchant HTTPS webhook receiver URL and generate a fresh 32-byte HMAC-SHA256 signing secret.",
+        "responses": {
+          "200": {
+            "description": "Successful Configure HTTPS Webhook Endpoint response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "HTTPS webhook endpoint URL.",
+                    "example": "https://example.com/webhooks/xpayr"
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/test": {
+      "post": {
+        "operationId": "xpayr_send_test_webhook",
+        "summary": "Dispatch Signed Test Webhook Event",
+        "description": "Send a signed test.webhook payload with HMAC-SHA256 headers to verify merchant webhook signature verification.",
+        "responses": {
+          "200": {
+            "description": "Successful Dispatch Signed Test Webhook Event response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents": {
+      "post": {
+        "operationId": "xpayr_create_ai_agent",
+        "summary": "Create Policy-Controlled AI Commerce Agent",
+        "description": "Provision a new merchant-managed AI commerce agent identity with scoped credentials and programmable spending guardrails.",
+        "responses": {
+          "200": {
+            "description": "Successful Create Policy-Controlled AI Commerce Agent response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "AI agent display name.",
+                    "example": "Autonomous Cloud Buyer"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Operational scope.",
+                    "example": "Pays API and compute invoices under $50 automatically."
+                  },
+                  "wallet_address": {
+                    "type": "string",
+                    "description": "Optional agent execution wallet.",
+                    "example": "0x71C...89A"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "xpayr_list_ai_agents",
+        "summary": "List Merchant AI Commerce Agents",
+        "description": "List all AI commerce agents managed by the merchant along with their status, assigned wallets, and spending policies.",
+        "responses": {
+          "200": {
+            "description": "Successful List Merchant AI Commerce Agents response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agents/{agent_id}/policy": {
+      "put": {
+        "operationId": "xpayr_update_ai_agent_policy",
+        "summary": "Update AI Agent Spending Guardrails",
+        "description": "Configure spending policy guardrails for an AI agent (max per-tx USD, daily cap, auto-approve threshold, allowed chains/tokens).",
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "description": "Target AI agent public ID.",
+            "schema": {
+              "type": "string",
+              "example": "agt_01HXYZ"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Update AI Agent Spending Guardrails response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "max_tx_amount": {
+                    "type": "number",
+                    "description": "Maximum single transaction USD amount.",
+                    "example": 100
+                  },
+                  "daily_limit_amount": {
+                    "type": "number",
+                    "description": "Maximum daily cumulative USD spend.",
+                    "example": 500
+                  },
+                  "auto_approve_under": {
+                    "type": "number",
+                    "description": "Auto-approve threshold in USD.",
+                    "example": 25
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-intents": {
+      "post": {
+        "operationId": "xpayr_submit_agent_payment_intent",
+        "summary": "Submit Autonomous AI Agent Payment Intent",
+        "description": "Submit an autonomous AI agent payment intent evaluated in real time against merchant policy rules (approved, pending_approval, rejected).",
+        "responses": {
+          "200": {
+            "description": "Successful Submit Autonomous AI Agent Payment Intent response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "description": "Requested payment amount.",
+                    "example": 19.99
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Token symbol (USDC, USDT).",
+                    "example": "USDC"
+                  },
+                  "network": {
+                    "type": "string",
+                    "description": "Target blockchain network.",
+                    "example": "arc-testnet"
+                  },
+                  "recipient_address": {
+                    "type": "string",
+                    "description": "Destination wallet address.",
+                    "example": "0xb0bD2f3A86db752dA693D8a686C406E269E57c99"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Payment justification memo.",
+                    "example": "Monthly GPU cluster invoice #402"
+                  }
+                },
+                "required": [
+                  "amount",
+                  "currency"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "xpayr_list_agent_payment_intents",
+        "summary": "List AI Agent Payment Intents & Audit Logs",
+        "description": "List AI agent payment intents, policy evaluation decisions, and audit trail records for the merchant.",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by decision status.",
+            "schema": {
+              "type": "string",
+              "example": "approved"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum records to return.",
+            "schema": {
+              "type": "integer",
+              "example": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful List AI Agent Payment Intents & Audit Logs response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-intents/{intent_id}/bridge": {
+      "post": {
+        "operationId": "xpayr_bridge_agent_intent_to_checkout",
+        "summary": "Bridge Approved Agent Intent to Checkout Session",
+        "description": "Bridge an approved AI agent payment intent into a live executable XPayr payment session with hosted checkout URL and on-chain verification.",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "description": "Approved agent payment intent ID.",
+            "schema": {
+              "type": "string",
+              "example": "agi_01HXYZ"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Bridge Approved Agent Intent to Checkout Session response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-approvals/{intent_id}/approve": {
+      "post": {
+        "operationId": "xpayr_approve_agent_intent",
+        "summary": "Approve Pending AI Agent Intent (Human-in-the-Loop)",
+        "description": "Approve a pending AI agent payment intent from the merchant approval queue and bridge it to checkout.",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "description": "Pending agent intent ID.",
+            "schema": {
+              "type": "string",
+              "example": "agi_01HXYZ"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Approve Pending AI Agent Intent (Human-in-the-Loop) response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "note": {
+                    "type": "string",
+                    "description": "Approval note.",
+                    "example": "Approved by Treasury Manager"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent-approvals/{intent_id}/reject": {
+      "post": {
+        "operationId": "xpayr_reject_agent_intent",
+        "summary": "Reject Pending AI Agent Intent",
+        "description": "Reject a pending AI agent payment intent in the merchant approval queue with an audit reason.",
+        "parameters": [
+          {
+            "name": "intent_id",
+            "in": "path",
+            "required": true,
+            "description": "Pending agent intent ID.",
+            "schema": {
+              "type": "string",
+              "example": "agi_01HXYZ"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Reject Pending AI Agent Intent response from XPayr Gateway API v1",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "description": "Rejection reason.",
+                    "example": "Exceeds vendor budget allocation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

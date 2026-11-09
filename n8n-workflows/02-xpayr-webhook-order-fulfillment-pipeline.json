@@ -1,0 +1,46 @@
+{
+  "filename": "02-xpayr-webhook-order-fulfillment-pipeline.json",
+  "name": "XPayr HMAC Webhook Receiver & Order Fulfillment Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "xpayr-ipn-callback",
+        "responseMode": "onReceived"
+      },
+      "name": "XPayr Signed Webhook Listener",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://xpayr.com/api/v1/payments/{{$json[\"body\"][\"session_id\"]}}/status",
+        "method": "GET"
+      },
+      "name": "Verify On-Chain Status via XPayr Public API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        520,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "XPayr Signed Webhook Listener": {
+      "main": [
+        [
+          {
+            "node": "Verify On-Chain Status via XPayr Public API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

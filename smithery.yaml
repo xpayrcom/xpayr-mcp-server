@@ -1,0 +1,31 @@
+# Smithery.ai MCP Server Configuration for XPayr 21-Tool Non-Custodial Crypto Gateway Suite
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: .
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required: []
+    properties:
+      xpayrApiKey:
+        type: string
+        description: Your XPayr Secret Key (sk_test_... or sk_live_...) from https://xpayr.com/merchant/register (optional for public/offline tools)
+        default: ""
+      suite:
+        type: string
+        description: XPayr MCP tool suite preset (flagship, checkout, webhooks, agents, merchant, all)
+        default: "all"
+  commandFunction:
+    |-
+    (config) => ({
+      command: 'node',
+      args: [
+        'packages/xpayr-mcp/bin/cli.mjs',
+        '--suite',
+        config.suite || 'all'
+      ],
+      env: {
+        XPAYR_API_KEY: config.xpayrApiKey || ''
+      }
+    })

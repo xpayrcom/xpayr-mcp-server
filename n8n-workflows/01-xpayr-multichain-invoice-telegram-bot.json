@@ -1,0 +1,77 @@
+{
+  "filename": "01-xpayr-multichain-invoice-telegram-bot.json",
+  "name": "XPayr Multi-Chain Crypto Invoice & Telegram Notification Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-crypto-invoice",
+        "responseMode": "lastNode"
+      },
+      "name": "Incoming Order Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xpayr.com/api/v1/payments",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "amount",
+              "value": "={{$json[\"amount\"] || 49.90}}"
+            },
+            {
+              "name": "currency",
+              "value": "={{$json[\"currency\"] || \"USDT\"}}"
+            },
+            {
+              "name": "is_multi_chain",
+              "value": true
+            },
+            {
+              "name": "send_invoice_email",
+              "value": true
+            },
+            {
+              "name": "customer_email",
+              "value": "={{$json[\"customer_email\"]}}"
+            },
+            {
+              "name": "order_id",
+              "value": "={{$json[\"order_id\"] || \"ORD-N8N\"}}"
+            }
+          ]
+        }
+      },
+      "name": "XPayr Create Multi-Chain Session",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        520,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Incoming Order Webhook": {
+      "main": [
+        [
+          {
+            "node": "XPayr Create Multi-Chain Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

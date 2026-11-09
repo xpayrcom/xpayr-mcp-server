@@ -1,0 +1,550 @@
+{
+  "name": "@xpayr/mcp-server",
+  "mcpName": "io.github.xpayrcom/xpayr-mcp-server",
+  "version": "1.0.0",
+  "title": "XPayr Non-Custodial Crypto Payment Gateway & AI Agent Commerce MCP Server",
+  "description": "Official 21-tool Model Context Protocol (MCP) server for XPayr (https://xpayr.com) enabling AI agents, Claude Desktop, Cursor, and VS Code to create multi-chain crypto payment links, verify on-chain transactions across EVM/TRON/Solana/Arc, manage HMAC webhooks, and execute policy-controlled AI agent payments.",
+  "homepage": "https://xpayr.com/developers",
+  "portal": "https://xpayrcom.github.io/xpayr-portal/",
+  "repository": "https://github.com/xpayrcom/xpayr-mcp-server",
+  "npmPackages": [
+    "@xpayr/mcp-server",
+    "xpayr-mcp"
+  ],
+  "dockerImage": "ghcr.io/xpayrcom/xpayr-mcp-server:latest",
+  "toolCount": 21,
+  "tools": [
+    {
+      "name": "xpayr_health_check",
+      "title": "API Gateway Health Check",
+      "suite": "merchant",
+      "flagship": true,
+      "method": "GET",
+      "path": "/health",
+      "auth": "Public (No Key)",
+      "description": "Check XPayr Gateway API v1 operational health, version, and server timestamp.",
+      "params": []
+    },
+    {
+      "name": "xpayr_create_payment_session",
+      "title": "Create Crypto Payment Session (Dual Checkout)",
+      "suite": "checkout",
+      "flagship": true,
+      "method": "POST",
+      "path": "/payments",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Create a non-custodial crypto payment session supporting Web3 1-Click Pay, Direct Exchange QR Transfer, Multi-Chain Links, 1-Year Reusable Links, and Automated HTML Invoice Email Delivery.",
+      "params": [
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "example": 49.9,
+          "description": "Invoice amount in USD/token units."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": true,
+          "example": "USDT",
+          "description": "Token symbol (USDT, USDC, SOL, TRX, BNB, ETH, MATIC)."
+        },
+        {
+          "name": "network",
+          "type": "string",
+          "required": false,
+          "example": "tron-mainnet",
+          "description": "Network key (tron-mainnet, solana-mainnet, bsc-mainnet, base-mainnet, arc-mainnet)."
+        },
+        {
+          "name": "order_id",
+          "type": "string",
+          "required": false,
+          "example": "ORD-1001",
+          "description": "Merchant order reference ID."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "example": "Pro SaaS Annual Plan",
+          "description": "Order description shown at checkout."
+        },
+        {
+          "name": "is_multi_chain",
+          "type": "boolean",
+          "required": false,
+          "example": true,
+          "description": "Allow buyer to dynamically select any active network and token at checkout."
+        },
+        {
+          "name": "is_reusable",
+          "type": "boolean",
+          "required": false,
+          "example": false,
+          "description": "Keep link active for 1 year for repeat payments."
+        },
+        {
+          "name": "send_invoice_email",
+          "type": "boolean",
+          "required": false,
+          "example": true,
+          "description": "Dispatch branded HTML invoice email to customer_email."
+        },
+        {
+          "name": "customer_email",
+          "type": "string",
+          "required": false,
+          "example": "buyer@example.com",
+          "description": "Customer email for invoice delivery."
+        },
+        {
+          "name": "ipn_callback_url",
+          "type": "string",
+          "required": false,
+          "example": "https://example.com/webhooks/xpayr",
+          "description": "HTTPS webhook endpoint URL."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_get_payment_session",
+      "title": "Get Payment Session Details",
+      "suite": "checkout",
+      "flagship": false,
+      "method": "GET",
+      "path": "/payments/{session_id}",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Retrieve full details, metadata, settlement split amounts, checkout mode, and on-chain transaction hash for a payment session.",
+      "params": [
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d",
+          "description": "Payment session ID."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_list_payment_sessions",
+      "title": "List Merchant Payment Sessions",
+      "suite": "checkout",
+      "flagship": false,
+      "method": "GET",
+      "path": "/payments",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "List merchant crypto payment sessions with filtering by status, currency, network, and pagination.",
+      "params": [
+        {
+          "name": "status",
+          "type": "string",
+          "required": false,
+          "example": "completed",
+          "description": "Filter by status (pending, completed, expired, failed)."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "example": "USDT",
+          "description": "Filter by token symbol."
+        },
+        {
+          "name": "network",
+          "type": "string",
+          "required": false,
+          "example": "tron-mainnet",
+          "description": "Filter by blockchain network key."
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false,
+          "example": 20,
+          "description": "Records per page (1-100)."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_get_public_payment_status",
+      "title": "Poll Public On-Chain Payment Status",
+      "suite": "checkout",
+      "flagship": true,
+      "method": "GET",
+      "path": "/payments/{session_id}/status",
+      "auth": "Public (No Key)",
+      "description": "Poll real-time public checkout status, on-chain tx_hash, sender wallet address, block confirmations, and paid_at timestamp without an API key.",
+      "params": [
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d",
+          "description": "Payment session ID."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_apply_payment_coupon",
+      "title": "Apply Checkout Discount Coupon",
+      "suite": "checkout",
+      "flagship": false,
+      "method": "POST",
+      "path": "/payments/{session_id}/coupon",
+      "auth": "Public (No Key)",
+      "description": "Validate and apply a merchant promotional discount coupon code to an active pending payment session.",
+      "params": [
+        {
+          "name": "session_id",
+          "type": "string",
+          "required": true,
+          "example": "ps_6b5b7d8737c0e0ec0a04a29a045d2d5d",
+          "description": "Target payment session ID."
+        },
+        {
+          "name": "coupon_code",
+          "type": "string",
+          "required": true,
+          "example": "XPAYR-DEMO",
+          "description": "Discount coupon code."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_get_merchant_profile",
+      "title": "Get Merchant Profile & Settlement Wallet",
+      "suite": "merchant",
+      "flagship": false,
+      "method": "GET",
+      "path": "/me",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Retrieve authenticated merchant profile, settlement wallet address, commission rate in basis points (50 bps = 0.5%), and active API keys.",
+      "params": []
+    },
+    {
+      "name": "xpayr_get_merchant_balance",
+      "title": "Get Multi-Chain Settlement Volume & Balance",
+      "suite": "merchant",
+      "flagship": true,
+      "method": "GET",
+      "path": "/me/balance",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Query confirmed non-custodial settlement volume, transaction counts, and platform fees grouped by currency and blockchain network.",
+      "params": []
+    },
+    {
+      "name": "xpayr_get_supported_networks",
+      "title": "List Supported Networks, Chains & Tokens",
+      "suite": "merchant",
+      "flagship": true,
+      "method": "GET",
+      "path": "/me/networks",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "List all active EVM, TRON, Solana, and Arc Mainnet/Testnet blockchain networks, chain IDs, RPC endpoints, splitter contracts, and supported tokens.",
+      "params": []
+    },
+    {
+      "name": "xpayr_get_webhook_config",
+      "title": "Get Webhook Configuration & Events",
+      "suite": "webhooks",
+      "flagship": false,
+      "method": "GET",
+      "path": "/webhooks",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Inspect the merchant webhook callback URL, masked HMAC-SHA256 signing secret, and subscribed payment lifecycle events.",
+      "params": []
+    },
+    {
+      "name": "xpayr_set_webhook_endpoint",
+      "title": "Configure HTTPS Webhook Endpoint",
+      "suite": "webhooks",
+      "flagship": false,
+      "method": "POST",
+      "path": "/webhooks",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Configure or update the merchant HTTPS webhook receiver URL and generate a fresh 32-byte HMAC-SHA256 signing secret.",
+      "params": [
+        {
+          "name": "url",
+          "type": "string",
+          "required": true,
+          "example": "https://example.com/webhooks/xpayr",
+          "description": "HTTPS webhook endpoint URL."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_send_test_webhook",
+      "title": "Dispatch Signed Test Webhook Event",
+      "suite": "webhooks",
+      "flagship": true,
+      "method": "POST",
+      "path": "/webhooks/test",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Send a signed test.webhook payload with HMAC-SHA256 headers to verify merchant webhook signature verification.",
+      "params": []
+    },
+    {
+      "name": "xpayr_create_ai_agent",
+      "title": "Create Policy-Controlled AI Commerce Agent",
+      "suite": "agents",
+      "flagship": false,
+      "method": "POST",
+      "path": "/agents",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Provision a new merchant-managed AI commerce agent identity with scoped credentials and programmable spending guardrails.",
+      "params": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "example": "Autonomous Cloud Buyer",
+          "description": "AI agent display name."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "example": "Pays API and compute invoices under $50 automatically.",
+          "description": "Operational scope."
+        },
+        {
+          "name": "wallet_address",
+          "type": "string",
+          "required": false,
+          "example": "0x71C...89A",
+          "description": "Optional agent execution wallet."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_list_ai_agents",
+      "title": "List Merchant AI Commerce Agents",
+      "suite": "agents",
+      "flagship": false,
+      "method": "GET",
+      "path": "/agents",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "List all AI commerce agents managed by the merchant along with their status, assigned wallets, and spending policies.",
+      "params": []
+    },
+    {
+      "name": "xpayr_update_ai_agent_policy",
+      "title": "Update AI Agent Spending Guardrails",
+      "suite": "agents",
+      "flagship": false,
+      "method": "PUT",
+      "path": "/agents/{agent_id}/policy",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Configure spending policy guardrails for an AI agent (max per-tx USD, daily cap, auto-approve threshold, allowed chains/tokens).",
+      "params": [
+        {
+          "name": "agent_id",
+          "type": "string",
+          "required": true,
+          "example": "agt_01HXYZ",
+          "description": "Target AI agent public ID."
+        },
+        {
+          "name": "max_tx_amount",
+          "type": "number",
+          "required": false,
+          "example": 100,
+          "description": "Maximum single transaction USD amount."
+        },
+        {
+          "name": "daily_limit_amount",
+          "type": "number",
+          "required": false,
+          "example": 500,
+          "description": "Maximum daily cumulative USD spend."
+        },
+        {
+          "name": "auto_approve_under",
+          "type": "number",
+          "required": false,
+          "example": 25,
+          "description": "Auto-approve threshold in USD."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_submit_agent_payment_intent",
+      "title": "Submit Autonomous AI Agent Payment Intent",
+      "suite": "agents",
+      "flagship": true,
+      "method": "POST",
+      "path": "/agent-intents",
+      "auth": "Bearer agk_test / agk_live",
+      "description": "Submit an autonomous AI agent payment intent evaluated in real time against merchant policy rules (approved, pending_approval, rejected).",
+      "params": [
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "example": 19.99,
+          "description": "Requested payment amount."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": true,
+          "example": "USDC",
+          "description": "Token symbol (USDC, USDT)."
+        },
+        {
+          "name": "network",
+          "type": "string",
+          "required": false,
+          "example": "arc-testnet",
+          "description": "Target blockchain network."
+        },
+        {
+          "name": "recipient_address",
+          "type": "string",
+          "required": false,
+          "example": "0xb0bD2f3A86db752dA693D8a686C406E269E57c99",
+          "description": "Destination wallet address."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "example": "Monthly GPU cluster invoice #402",
+          "description": "Payment justification memo."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_list_agent_payment_intents",
+      "title": "List AI Agent Payment Intents & Audit Logs",
+      "suite": "agents",
+      "flagship": false,
+      "method": "GET",
+      "path": "/agent-intents",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "List AI agent payment intents, policy evaluation decisions, and audit trail records for the merchant.",
+      "params": [
+        {
+          "name": "status",
+          "type": "string",
+          "required": false,
+          "example": "approved",
+          "description": "Filter by decision status."
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false,
+          "example": 20,
+          "description": "Maximum records to return."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_bridge_agent_intent_to_checkout",
+      "title": "Bridge Approved Agent Intent to Checkout Session",
+      "suite": "agents",
+      "flagship": true,
+      "method": "POST",
+      "path": "/agent-intents/{intent_id}/bridge",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Bridge an approved AI agent payment intent into a live executable XPayr payment session with hosted checkout URL and on-chain verification.",
+      "params": [
+        {
+          "name": "intent_id",
+          "type": "string",
+          "required": true,
+          "example": "agi_01HXYZ",
+          "description": "Approved agent payment intent ID."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_approve_agent_intent",
+      "title": "Approve Pending AI Agent Intent (Human-in-the-Loop)",
+      "suite": "agents",
+      "flagship": false,
+      "method": "POST",
+      "path": "/agent-approvals/{intent_id}/approve",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Approve a pending AI agent payment intent from the merchant approval queue and bridge it to checkout.",
+      "params": [
+        {
+          "name": "intent_id",
+          "type": "string",
+          "required": true,
+          "example": "agi_01HXYZ",
+          "description": "Pending agent intent ID."
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false,
+          "example": "Approved by Treasury Manager",
+          "description": "Approval note."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_reject_agent_intent",
+      "title": "Reject Pending AI Agent Intent",
+      "suite": "agents",
+      "flagship": false,
+      "method": "POST",
+      "path": "/agent-approvals/{intent_id}/reject",
+      "auth": "Bearer sk_test / sk_live",
+      "description": "Reject a pending AI agent payment intent in the merchant approval queue with an audit reason.",
+      "params": [
+        {
+          "name": "intent_id",
+          "type": "string",
+          "required": true,
+          "example": "agi_01HXYZ",
+          "description": "Pending agent intent ID."
+        },
+        {
+          "name": "reason",
+          "type": "string",
+          "required": false,
+          "example": "Exceeds vendor budget allocation",
+          "description": "Rejection reason."
+        }
+      ]
+    },
+    {
+      "name": "xpayr_calculate_gateway_fee_and_split",
+      "title": "0.5% Gateway Fee Split & Exchange Tolerance Calculator",
+      "suite": "merchant",
+      "flagship": true,
+      "method": "LOCAL",
+      "path": "/tools/crypto-payment-fee-calculator",
+      "auth": "Offline / Public",
+      "description": "Deterministically calculate XPayr flat 0.5% (50 bps) gateway fee split, net merchant wallet settlement, 1% (max $0.50) exchange withdrawal tolerance, and savings vs BitPay, Coinbase Commerce, and Stripe.",
+      "params": [
+        {
+          "name": "amount",
+          "type": "number",
+          "required": false,
+          "example": 1000,
+          "description": "Transaction or monthly volume amount in USD/USDT."
+        },
+        {
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "example": "USDT",
+          "description": "Settlement token symbol."
+        },
+        {
+          "name": "network",
+          "type": "string",
+          "required": false,
+          "example": "tron-mainnet",
+          "description": "Target blockchain network."
+        }
+      ]
+    }
+  ]
+}

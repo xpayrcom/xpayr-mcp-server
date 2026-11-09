@@ -1,0 +1,51 @@
+{
+  "filename": "04-xpayr-daily-multichain-treasury-digest.json",
+  "name": "XPayr Daily Multi-Chain Settlement & Treasury Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "name": "Daily Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://xpayr.com/api/v1/me/balance"
+      },
+      "name": "Fetch Multi-Chain Confirmed Balances",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        520,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Daily Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Multi-Chain Confirmed Balances",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

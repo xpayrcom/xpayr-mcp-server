@@ -1,0 +1,66 @@
+{
+  "filename": "03-xpayr-ai-agent-autonomous-procurement.json",
+  "name": "XPayr Autonomous AI Agent Payment Intent & Approval Bridge",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xpayr.com/api/v1/agent-intents",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "amount",
+              "value": 19.99
+            },
+            {
+              "name": "currency",
+              "value": "USDC"
+            },
+            {
+              "name": "network",
+              "value": "arc-testnet"
+            },
+            {
+              "name": "reason",
+              "value": "Automated API Quota Renewal"
+            }
+          ]
+        }
+      },
+      "name": "Submit AI Agent Payment Intent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://xpayr.com/api/v1/agent-intents/{{$json[\"data\"][\"intent_public_id\"]}}/bridge"
+      },
+      "name": "Bridge Approved Intent to XPayr Checkout",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        540,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Submit AI Agent Payment Intent": {
+      "main": [
+        [
+          {
+            "node": "Bridge Approved Intent to XPayr Checkout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.xpayrcom/xpayr-mcp-server",
+    "title": "XPayr Non-Custodial Crypto Gateway & AI Agent Commerce MCP",
+    "description": "21 MCP tools for non-custodial crypto checkout, USDT/USDC links, webhooks, and AI agents.",
+    "version": "1.0.0",
+    "websiteUrl": "https://xpayr.com/developers",
+    "repository": {
+        "url": "https://github.com/xpayrcom/xpayr-mcp-server",
+        "source": "github"
+    },
+    "packages": [
+        {
+            "registryType": "npm",
+            "identifier": "@xpayr/mcp-server",
+            "version": "1.0.0",
+            "transport": {
+                "type": "stdio"
+            },
+            "environmentVariables": [
+                {
+                    "name": "XPAYR_API_KEY",
+                    "description": "XPayr Merchant Secret Key (sk_test_... or sk_live_...) from https://xpayr.com/merchant/register (optional for public/offline tools).",
+                    "isRequired": false,
+                    "format": "string",
+                    "isSecret": true
+                }
+            ]
+        },
+        {
+            "registryType": "npm",
+            "identifier": "xpayr-mcp",
+            "version": "1.0.0",
+            "transport": {
+                "type": "stdio"
+            },
+            "environmentVariables": [
+                {
+                    "name": "XPAYR_API_KEY",
+                    "description": "XPayr Merchant Secret Key (sk_test_... or sk_live_...) from https://xpayr.com/merchant/register (optional for public/offline tools).",
+                    "isRequired": false,
+                    "format": "string",
+                    "isSecret": true
+                }
+            ]
+        }
+    ]
+}
