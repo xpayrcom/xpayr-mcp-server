@@ -1,12 +1,24 @@
+<p align="center">
+  <a href="https://xpayr.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="./assets/xpayr-logo-white.png" />
+      <source media="(prefers-color-scheme: light)" srcset="./assets/xpayr-logo-black.png" />
+      <img alt="XPayr Official Logo" src="./assets/xpayr-logo-white.png" height="54" />
+    </picture>
+  </a>
+</p>
+
 # XPayr Official Model Context Protocol (MCP) Server & AI Agent Commerce Suite (`@xpayr/mcp-server`)
 
+[![Powered by XPayr](https://xpayr.com/partner-badge.php?type=powered_by&theme=dark)](https://xpayr.com)
 [![NPM @xpayr/mcp-server](https://img.shields.io/npm/v/%40xpayr%2Fmcp-server?label=%40xpayr%2Fmcp-server&color=029bfd)](https://www.npmjs.com/package/@xpayr/mcp-server)
 [![NPM xpayr-mcp](https://img.shields.io/npm/v/xpayr-mcp?label=xpayr-mcp&color=0ea5e9)](https://www.npmjs.com/package/xpayr-mcp)
 [![Official MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.xpayrcom%2Fxpayr--mcp--server-10b981)](https://registry.modelcontextprotocol.io/v0/servers?search=xpayr)
 [![GHCR Docker](https://img.shields.io/badge/GHCR-ghcr.io%2Fxpayrcom%2Fxpayr--mcp--server-2563eb)](https://github.com/xpayrcom/xpayr-mcp-server/pkgs/container/xpayr-mcp-server)
 [![Verify MCP Suite](https://github.com/xpayrcom/xpayr-mcp-server/actions/workflows/verify-mcp-suite.yml/badge.svg)](https://github.com/xpayrcom/xpayr-mcp-server/actions/workflows/verify-mcp-suite.yml)
 [![Glama MCP Score](https://glama.ai/mcp/servers/xpayrcom/xpayr-mcp-server/badges/score.svg)](https://glama.ai/mcp/servers/xpayrcom/xpayr-mcp-server)
-[![Interactive Portal](https://img.shields.io/badge/Live_Portal-xpayrcom.github.io-8b5cf6)](https://xpayrcom.github.io/xpayr-portal/)
+[![Interactive Portal](https://img.shields.io/badge/Live_Portal-mcp.xpayr.com-8b5cf6)](https://mcp.xpayr.com/)
+[![GitHub Pages Root](https://img.shields.io/badge/GitHub_Pages-xpayrcom.github.io-0ea5e9)](https://xpayrcom.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
 **XPayr** ([https://xpayr.com](https://xpayr.com)) is a **non-custodial multi-chain crypto payment gateway** and **policy-controlled AI agent commerce infrastructure** supporting **EVM (Ethereum, BNB Chain, Polygon, Arbitrum, Base)**, **TRON (TRC-20 USDT & TRX)**, **Solana (SOL, SPL USDC, SPL USDT)**, and **Arc Mainnet & Testnet (Native USDC Gas)** at a **flat 0.5% gateway fee (50 bps)** with direct wallet-to-wallet settlement.
@@ -20,7 +32,7 @@ This repository provides the official **21-Tool Model Context Protocol (MCP) Ser
 ### Option A: One-Click IDE Deep Links
 - **Cursor IDE:** [`⚡ Install XPayr MCP in Cursor`](cursor://anysphere.cursor-mcp/install?name=xpayr&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIkB4cGF5ci9tY3Atc2VydmVyIiwiLS1zdWl0ZSIsImFsbCJdLCJlbnYiOnsiWFBBWVJfQVBJX0tFWSI6InNrX3Rlc3RfWU9VUl9LRVkifX0%3D)
 - **VS Code (GitHub Copilot MCP):** [`⚡ Install XPayr MCP in VS Code`](vscode:mcp/install?%7B%22name%22%3A%22xpayr%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22%40xpayr%2Fmcp-server%22%2C%22--suite%22%2C%22all%22%5D%2C%22env%22%3A%7B%22XPAYR_API_KEY%22%3A%22sk_test_YOUR_KEY%22%7D%7D)
-- **Interactive Web Configurator & Fee Calculator:** [https://xpayrcom.github.io/xpayr-portal/](https://xpayrcom.github.io/xpayr-portal/)
+- **Interactive Web Configurator & Fee Calculator:** [https://mcp.xpayr.com/](https://mcp.xpayr.com/) & [https://xpayrcom.github.io/](https://xpayrcom.github.io/)
 
 ### Option B: Claude Desktop / Cursor (`claude_desktop_config.json` or `.cursor/mcp.json`)
 
