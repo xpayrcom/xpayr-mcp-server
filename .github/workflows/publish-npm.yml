@@ -28,11 +28,11 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
       - name: Use an npm CLI that supports trusted publishing (OIDC)
-        run: npm install -g npm@^11.5.1
+        run: npm install -g npm@latest
       - name: Syntax check
         working-directory: ${{ matrix.package }}
         run: node --check bin/cli.mjs && node --check index.mjs
-      - name: Publish with npm trusted publishing (skip if this version exists)
+      - name: Stage with npm trusted publishing (maintainer approves with 2FA; skip if published)
         working-directory: ${{ matrix.package }}
         run: |
           NAME=$(node -p "require('./package.json').name")
@@ -40,4 +40,4 @@ jobs:
           if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
             echo "$NAME@$VERSION already published"; exit 0
           fi
-          npm publish --access public --provenance
+          npm stage publish --access public --provenance
