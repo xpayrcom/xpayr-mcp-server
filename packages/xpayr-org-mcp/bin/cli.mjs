@@ -391,6 +391,14 @@ async function executeXpayrTool(toolDef, toolArgs = {}) {
     const baseUrl = (process.env.XPAYR_BASE_URL || 'https://xpayr.com/api/v1').replace(/\/+$/, '');
     const apiKey = (process.env.XPAYR_API_KEY || process.env.XPAYR_AGENT_KEY || '').trim();
 
+    // Never send the secret key over plaintext or to a malformed URL (localhost allowed for development).
+    let parsedBase;
+    try { parsedBase = new URL(baseUrl); } catch { throw new Error('XPAYR_BASE_URL is not a valid URL'); }
+    const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(parsedBase.hostname);
+    if (parsedBase.protocol !== 'https:' && !(isLocal && parsedBase.protocol === 'http:')) {
+        throw new Error('XPAYR_BASE_URL must use https://');
+    }
+
     if (toolDef.requiresAuth && !apiKey) {
         throw new Error(
             `XPAYR_API_KEY environment variable is required to call ${toolDef.name}. ` +

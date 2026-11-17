@@ -3,44 +3,110 @@
   "name": "XPayr HMAC Webhook Receiver & Order Fulfillment Automation",
   "nodes": [
     {
+      "name": "XPayr Signed Webhook Listener",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
       "parameters": {
         "httpMethod": "POST",
         "path": "xpayr-ipn-callback",
-        "responseMode": "onReceived"
-      },
-      "name": "XPayr Signed Webhook Listener",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [
-        240,
-        300
-      ]
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      }
     },
     {
+      "name": "Verify X-XPayr-Signature (fail closed)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300],
       "parameters": {
-        "url": "=https://xpayr.com/api/v1/payments/{{$json[\"body\"][\"session_id\"]}}/status",
-        "method": "GET"
-      },
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Requires NODE_FUNCTION_ALLOW_BUILTIN=crypto and XPAYR_WEBHOOK_SECRET in the n8n environment.\nconst crypto = require('crypto');\nconst secret = String($env.XPAYR_WEBHOOK_SECRET || '');\nif (secret === '') {\n  // Fail closed: never accept webhooks when the signing secret is missing.\n  throw new Error('XPAYR_WEBHOOK_SECRET is not configured');\n}\nconst raw = await this.helpers.getBinaryDataBuffer(0, 'data');\nconst header = String(($json.headers || {})['x-xpayr-signature'] || '').trim().toLowerCase().replace(/^sha256=/, '');\nlet valid = false;\nif (/^[a-f0-9]{64}$/.test(header)) {\n  const expected = crypto.createHmac('sha256', secret).update(raw).digest();\n  valid = crypto.timingSafeEqual(expected, Buffer.from(header, 'hex'));\n}\nlet event = {};\nif (valid) {\n  try { event = JSON.parse(raw.toString('utf8')); } catch (e) { valid = false; }\n}\nconst data = (event && event.data) || {};\nconst paymentId = String(data.payment_id || data.id || event.session_id || '');\nif (!/^[A-Za-z0-9_-]{6,128}$/.test(paymentId)) valid = false;\nreturn { json: { valid, event_id: event.id || null, event_type: event.type || event.event || null, payment_id: valid ? paymentId : null } };"
+      }
+    },
+    {
+      "name": "Signature Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [720, 300],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.valid }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Reject (401)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [960, 460],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"invalid signature\" } }}",
+        "options": {
+          "responseCode": 401
+        }
+      }
+    },
+    {
       "name": "Verify On-Chain Status via XPayr Public API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [
-        520,
-        300
-      ]
+      "position": [960, 220],
+      "parameters": {
+        "url": "=https://xpayr.com/api/v1/payments/{{ encodeURIComponent($json.payment_id) }}/status",
+        "method": "GET"
+      }
+    },
+    {
+      "name": "Require Settled Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 220],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Fulfil only when XPayr itself reports the payment as settled; never trust the webhook body alone.\nconst status = String($json.status || '').toLowerCase();\nconst settled = status === 'completed' || status === 'underpaid_accepted';\nreturn { json: { payment_id: $('Verify X-XPayr-Signature (fail closed)').item.json.payment_id, status, fulfil: settled } };"
+      }
+    },
+    {
+      "name": "Acknowledge (200)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1440, 220],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"received\": true } }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
     }
   ],
   "connections": {
     "XPayr Signed Webhook Listener": {
+      "main": [[{ "node": "Verify X-XPayr-Signature (fail closed)", "type": "main", "index": 0 }]]
+    },
+    "Verify X-XPayr-Signature (fail closed)": {
+      "main": [[{ "node": "Signature Valid?", "type": "main", "index": 0 }]]
+    },
+    "Signature Valid?": {
       "main": [
-        [
-          {
-            "node": "Verify On-Chain Status via XPayr Public API",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Verify On-Chain Status via XPayr Public API", "type": "main", "index": 0 }],
+        [{ "node": "Reject (401)", "type": "main", "index": 0 }]
       ]
+    },
+    "Verify On-Chain Status via XPayr Public API": {
+      "main": [[{ "node": "Require Settled Status", "type": "main", "index": 0 }]]
+    },
+    "Require Settled Status": {
+      "main": [[{ "node": "Acknowledge (200)", "type": "main", "index": 0 }]]
     }
   }
 }

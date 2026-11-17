@@ -104,7 +104,7 @@ Connect XPayr directly to **OpenAI Custom GPTs**, **Dify.ai**, **Relevance AI**,
 ## 🔄 Ready-to-Import `n8n` Workflows (`./n8n-workflows/`)
 
 1. [`01-xpayr-multichain-invoice-telegram-bot.json`](./n8n-workflows/01-xpayr-multichain-invoice-telegram-bot.json) — Generate universal multi-chain payment links and push branded HTML invoices.
-2. [`02-xpayr-webhook-order-fulfillment-pipeline.json`](./n8n-workflows/02-xpayr-webhook-order-fulfillment-pipeline.json) — Receive signed XPayr webhooks and verify on-chain transaction finality.
+2. [`02-xpayr-webhook-order-fulfillment-pipeline.json`](./n8n-workflows/02-xpayr-webhook-order-fulfillment-pipeline.json) — Receive signed XPayr webhooks, verify `X-XPayr-Signature` over the raw body (fails closed when `XPAYR_WEBHOOK_SECRET` is unset; requires `NODE_FUNCTION_ALLOW_BUILTIN=crypto`), then confirm settlement via the XPayr status API before fulfilment.
 3. [`03-xpayr-ai-agent-autonomous-procurement.json`](./n8n-workflows/03-xpayr-ai-agent-autonomous-procurement.json) — Autonomous AI agent submits payment intent, passes policy guardrails, and bridges to checkout.
 4. [`04-xpayr-daily-multichain-treasury-digest.json`](./n8n-workflows/04-xpayr-daily-multichain-treasury-digest.json) — Daily multi-chain treasury settlement digest across EVM, TRON, Solana, and Arc.
 
