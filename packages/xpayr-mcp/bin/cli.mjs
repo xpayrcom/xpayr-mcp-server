@@ -420,7 +420,7 @@ async function executeXpayrTool(toolDef, toolArgs = {}) {
     const headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'User-Agent': 'XPayr-MCP-Server/1.0.0 (+https://xpayr.com/developers)'
+        'User-Agent': 'XPayr-MCP-Server/1.0.1 (+https://xpayr.com/developers)'
     };
 
     if (apiKey) {
@@ -504,7 +504,7 @@ async function handleJsonRpcMessage(msg, activeToolSet) {
             },
             serverInfo: {
                 name: '@xpayr/mcp-server',
-                version: '1.0.0'
+                version: '1.0.1'
             }
         });
         return;

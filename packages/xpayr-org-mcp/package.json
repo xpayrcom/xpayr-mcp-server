@@ -1,6 +1,6 @@
 {
     "name": "@xpayr/mcp-server",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "mcpName": "io.github.xpayrcom/xpayr-mcp-server",
     "description": "Official @xpayr Model Context Protocol (MCP) Server & CLI Launcher exposing 21 Non-Custodial Crypto Checkout, Multi-Chain Payment Link, Signed Webhook, and AI Agent Commerce tools for Claude Desktop, Cursor, and VS Code.",
     "type": "module",

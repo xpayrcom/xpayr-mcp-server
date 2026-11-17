@@ -3,7 +3,7 @@
     "name": "io.github.xpayrcom/xpayr-mcp-server",
     "title": "XPayr Non-Custodial Crypto Gateway & AI Agent Commerce MCP",
     "description": "21 MCP tools for non-custodial crypto checkout, USDT/USDC links, webhooks, and AI agents.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "websiteUrl": "https://xpayr.com/developers",
     "repository": {
         "url": "https://github.com/xpayrcom/xpayr-mcp-server",
@@ -13,7 +13,7 @@
         {
             "registryType": "npm",
             "identifier": "@xpayr/mcp-server",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "transport": {
                 "type": "stdio"
             },
@@ -30,7 +30,7 @@
         {
             "registryType": "npm",
             "identifier": "xpayr-mcp",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "transport": {
                 "type": "stdio"
             },
